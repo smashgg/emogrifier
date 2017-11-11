@@ -2252,4 +2252,21 @@ class EmogrifierTest extends \PHPUnit_Framework_TestCase
 
         self::assertContains('<p style="' . $expectedStyleAttributeContent . '">', $result);
     }
+
+
+	/**
+	 * @test
+	 *
+	 */
+    public function emogrifySupportsMustacheTemplates() {
+		$this->subject->setHtml(
+			'<html><head><style>a {color: black}</style></head><body><a href="{{manageUrl}}" class="btn btn-primary">link</a></html>'
+		);
+		$this->subject->enableCssToHtmlMapping();
+		$this->subject->setXMLOutput();
+
+		$result = $this->subject->emogrify();
+
+		self::assertContains('<a href="{{manageUrl}}"', $result);
+	}
 }

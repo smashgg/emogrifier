@@ -77,6 +77,16 @@ class Emogrifier
     const DEFAULT_DOCUMENT_TYPE = '<!DOCTYPE html>';
 
     /**
+	 * @var string
+	 */
+    const OUTPUT_TYPE_HTML = 'html';
+
+	/**
+	 * @var string
+	 */
+	const OUTPUT_TYPE_XML = 'xml';
+
+    /**
      * @var string
      */
     private $html = '';
@@ -154,6 +164,15 @@ class Emogrifier
      * @var bool
      */
     private $shouldKeepInvisibleNodes = true;
+
+
+	/**
+	 * Determines the output type of the doc. Added this to optionally output as xml doc to prevent url encoding of the
+	 * a tag
+	 *
+	 * @var string
+	 */
+    private $outputType = self::OUTPUT_TYPE_HTML;
 
     /**
      * @var string[]
@@ -289,7 +308,10 @@ class Emogrifier
      */
     public function emogrify()
     {
-        return $this->createAndProcessXmlDocument()->saveHTML();
+
+		$xmlDoc = $this->createAndProcessXmlDocument();
+
+		return $this->processOutput($xmlDoc);
     }
 
     /**
@@ -305,10 +327,50 @@ class Emogrifier
     public function emogrifyBodyContent()
     {
         $xmlDocument = $this->createAndProcessXmlDocument();
-        $bodyNodeHtml = $xmlDocument->saveHTML($this->getBodyElement($xmlDocument));
+
+        $bodyNodeHtml = $this->processOutput($xmlDocument, $this->$this->getBodyElement($xmlDocument));
 
         return str_replace(['<body>', '</body>'], '', $bodyNodeHtml);
     }
+
+	/**
+	 * Processes the output depending on output type.
+	 *
+	 * @param $xmlDocument - doc to process
+	 * @param bool $element - element to base off of
+	 * @return string
+	 */
+    private function processOutput($xmlDocument, $element = false) {
+    	$output = '';
+    	if ($this->outputType === self::OUTPUT_TYPE_HTML) {
+    		$output = $this->processHTMLOutput($xmlDocument, $element);
+		} else if ($this->outputType === self::OUTPUT_TYPE_XML) {
+    		$output = $this->processXMLOutput($xmlDocument, $element);
+		}
+
+		return $output;
+	}
+
+	private function processHTMLOutput ($xmlDocument, $element = false) {
+    	if ($element !== false) {
+			$output = $xmlDocument->saveHTML($element);
+		} else {
+    		$output = $xmlDocument->saveHTML();
+		}
+		return $output;
+	}
+
+	private function processXMLOutput ($xmlDocument, $element = false) {
+		if ($element !== false) {
+			$output = $xmlDocument->saveXML($element);
+		} else {
+			$output = $xmlDocument->saveXML();
+		}
+
+		$output = preg_replace("/\<\?xml(.*?)\?\>/","",$output);
+
+		return $output;
+	}
 
     /**
      * Creates an XML document from $this->html and emogrifies ist.
@@ -324,7 +386,10 @@ class Emogrifier
         }
 
         $xmlDocument = $this->createRawXmlDocument();
-        $this->ensureExistenceOfBodyElement($xmlDocument);
+		fwrite(STDERR, print_r($xmlDocument->saveHTML(), TRUE));
+
+
+		$this->ensureExistenceOfBodyElement($xmlDocument);
         $this->process($xmlDocument);
 
         return $xmlDocument;
@@ -396,6 +461,13 @@ class Emogrifier
 
             /** @var \DOMElement $node */
             foreach ($nodesMatchingCssSelectors as $node) {
+
+				foreach ($node->attributes as $attrName => $attrNode) {
+//					fwrite(STDERR, "FUCK");
+//					fwrite(STDERR, print_r($attrName, TRUE));
+//					fwrite(STDERR, print_r($attrNode	, TRUE));
+				}
+//				fwrite(STDERR, print_r($node->attributes->getNamedItem("href")->nodeValue, TRUE));
                 if (in_array($node, $excludedNodes, true)) {
                     continue;
                 }
@@ -783,6 +855,25 @@ class Emogrifier
     {
         $this->shouldMapCssToHtml = true;
     }
+
+	/**
+	 * Enables the output type to be HTML based.
+	 *
+	 * @return void
+	 */
+    public function setHTMLOutput()
+	{
+		$this->outputType = self::OUTPUT_TYPE_HTML;
+	}
+	/**
+	 * Enables the output type to be XML based. This would actually prevent urls from being encoded
+	 *
+	 * @return void
+	 */
+	public function setXMLOutput()
+	{
+		$this->outputType = self::OUTPUT_TYPE_XML;
+	}
 
     /**
      * Clears all caches.
@@ -1194,7 +1285,6 @@ class Emogrifier
         }
 
         $htmlElement = $document->getElementsByTagName('html')->item(0);
-
         $htmlElement->appendChild($document->createElement('body'));
     }
 
