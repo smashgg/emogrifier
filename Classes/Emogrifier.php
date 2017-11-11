@@ -386,8 +386,6 @@ class Emogrifier
         }
 
         $xmlDocument = $this->createRawXmlDocument();
-		fwrite(STDERR, print_r($xmlDocument->saveHTML(), TRUE));
-
 
 		$this->ensureExistenceOfBodyElement($xmlDocument);
         $this->process($xmlDocument);
@@ -461,13 +459,6 @@ class Emogrifier
 
             /** @var \DOMElement $node */
             foreach ($nodesMatchingCssSelectors as $node) {
-
-				foreach ($node->attributes as $attrName => $attrNode) {
-//					fwrite(STDERR, "FUCK");
-//					fwrite(STDERR, print_r($attrName, TRUE));
-//					fwrite(STDERR, print_r($attrNode	, TRUE));
-				}
-//				fwrite(STDERR, print_r($node->attributes->getNamedItem("href")->nodeValue, TRUE));
                 if (in_array($node, $excludedNodes, true)) {
                     continue;
                 }
