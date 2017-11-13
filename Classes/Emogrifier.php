@@ -345,6 +345,20 @@ class Emogrifier
         return str_replace(['<body>', '</body>'], '', $bodyNodeHtml);
     }
 
+    private function urlDecodeResponse($result)
+	{
+		$patterns = '/href="(%7B%7B(\w+)%7D%7D)"/';
+
+		$result = preg_replace_callback($patterns,
+			function ($matches) {
+				$match = $matches[1];
+				$response = 'href="' . urldecode($match) . '"';
+				return $response;
+			}, $result);
+
+		return $result;
+	}
+
 	/**
 	 * Processes the output depending on output type.
 	 *
@@ -369,6 +383,9 @@ class Emogrifier
 		} else {
     		$output = $xmlDocument->saveHTML();
 		}
+
+		$output = $this->urlDecodeResponse($output);
+
 		return $output;
 	}
 

@@ -2267,17 +2267,6 @@ class EmogrifierTest extends \PHPUnit_Framework_TestCase
 
 		$result = $this->subject->emogrify();
 
-		$patterns = '/href="(%7B%7B(\w+)%7D%7D)"/';
-
-		$result = preg_replace_callback($patterns,
-			function ($matches) {
-				fwrite(STDERR, print_r($matches, true) . "\n");
-				$match = $matches[1];
-				$response = 'href="' . urldecode($match) . '"';
-				return $response;
-			}, $result);
-
-
 		self::assertContains('<a href="{{manageUrl}}"', $result);
 	}
 
