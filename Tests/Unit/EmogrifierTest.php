@@ -2260,13 +2260,41 @@ class EmogrifierTest extends \PHPUnit_Framework_TestCase
 	 */
     public function emogrifySupportsMustacheTemplates() {
 		$this->subject->setHtml(
-			'<html><head><style>a {color: black}</style></head><body><a href="{{manageUrl}}" class="btn btn-primary">link</a></html>'
+			'<html><head><style>a {color: black}</style></head><body><a href="{{manageUrl}}" class="btn btn-primary">link</a><a href="{{someOtherLinks}}" class="btn btn-primary">link</a></html>'
 		);
 		$this->subject->enableCssToHtmlMapping();
-		$this->subject->setXMLOutput();
+		$this->subject->enablePreserveStyleTags();
 
 		$result = $this->subject->emogrify();
 
+		$patterns = '/href="(%7B%7B(\w+)%7D%7D)"/';
+
+		$result = preg_replace_callback($patterns,
+			function ($matches) {
+				fwrite(STDERR, print_r($matches, true) . "\n");
+				$match = $matches[1];
+				$response = 'href="' . urldecode($match) . '"';
+				return $response;
+			}, $result);
+
+
 		self::assertContains('<a href="{{manageUrl}}"', $result);
+	}
+
+
+	/**
+	 * @test
+	 *
+	 */
+	public function emogrifySupportsStyleTagMaintenance() {
+		$this->subject->setHtml(
+			'<html><head><style>a {color: black}</style></head><body><a href="{{manageUrl}}" class="btn btn-primary">link</a></html>'
+		);
+		$this->subject->enableCssToHtmlMapping();
+		$this->subject->enablePreserveStyleTags();
+
+		$result = $this->subject->emogrify();
+
+		self::assertContains('<style>', $result);
 	}
 }

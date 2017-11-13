@@ -148,14 +148,26 @@ class Emogrifier
     /**
      * Determines whether the <style> blocks in the HTML passed to this class should be parsed.
      *
-     * If set to true, the <style> blocks will be removed from the HTML and their contents will be applied to the HTML
-     * via inline styles.
-     *
-     * If set to false, the <style> blocks will be left as they are in the HTML.
+
      *
      * @var bool
      */
     private $isStyleBlocksParsingEnabled = true;
+
+	/**
+	 * If this is enabled we won't remove style tags from the DOM when using "isStyleBlocksParsingEnabled"
+	 *
+	 * If $isStyleBlocksParsingEnabled is set to true AND
+	 *
+	 *
+	 * If set to true, the <style> blocks will be removed from the HTML and their contents will be applied to the HTML
+	 * via inline styles.
+	 *
+	 * If set to false, the <style> blocks will be left as they are in the HTML.
+	 *
+	 * @var bool
+	 */
+    private $preserveStyleTags = false;
 
     /**
      * Determines whether elements with the `display: none` property are
@@ -826,6 +838,26 @@ class Emogrifier
         $this->isStyleBlocksParsingEnabled = false;
     }
 
+	/**
+	 * Enable the preservation of <style> blocks.
+	 *
+	 * @return void
+	 */
+	public function enablePreserveStyleTags()
+	{
+		$this->preserveStyleTags = true;
+	}
+
+	/**
+	 * Enable the preservation of <style> blocks.
+	 *
+	 * @return void
+	 */
+	public function disablePreserveStyleTags()
+	{
+		$this->preserveStyleTags = false;
+	}
+
     /**
      * Disables the removal of elements with `display: none` properties.
      *
@@ -1235,7 +1267,9 @@ class Emogrifier
         /** @var \DOMNode $styleNode */
         foreach ($styleNodes as $styleNode) {
             $css .= "\n\n" . $styleNode->nodeValue;
-            $styleNode->parentNode->removeChild($styleNode);
+            if (!$this->preserveStyleTags) {
+				$styleNode->parentNode->removeChild($styleNode);
+			}
         }
 
         return $css;
