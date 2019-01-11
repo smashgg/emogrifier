@@ -1,25 +1,27 @@
 # Emogrifier Change Log
 
 All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).
+This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 1.2.2
 
-## x.y.z (unreleased)
+### Fixed
+- PHP 7.3 support
+  ([#643](https://github.com/MyIntervals/emogrifier/pull/643))
+  - Allow PHP 7.3 in `composer.json`
+  - Test in Travis for PHP 7.3
+- Escape hyphens in regular expressions
+  ([#599](https://github.com/MyIntervals/emogrifier/pull/599))
+
+### Removed
+- Drop the `@version` PHPDoc annotations
+  ([#644](https://github.com/MyIntervals/emogrifier/pull/644))
+
+## 1.2.1
 
 ### Added
-- Automatically remove !important annotations from final inline style declarations
-  ([#420](https://github.com/MyIntervals/emogrifier/pull/420))
-- Automatically move <style> block from <head> to <body>
-  ([#396](https://github.com/MyIntervals/emogrifier/pull/396))
-- PHP 7.2 support ([#398](https://github.com/MyIntervals/emogrifier/pull/398))
-  - Allow PHP 7.2 in composer.json, cleaner PHP version constraint
-  - Test in Travis for PHP 7.2
-- Debug mode. Throw debug exceptions only if debug is active.
-  ([#392](https://github.com/MyIntervals/emogrifier/pull/392))
-
-
-### Changed
-
+- Mark as compatible with PHP 7.2.x
+  ([#582](https://github.com/MyIntervals/emogrifier/pull/582))
 
 ### Deprecated
 - Support for PHP 5.5 will be removed in Emogrifier 3.0.
