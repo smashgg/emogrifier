@@ -27,33 +27,6 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Support for PHP 5.5 will be removed in Emogrifier 3.0.
 - Support for PHP 5.6 will be removed in Emogrifier 4.0.
 
-
-### Removed
-- Drop support for PHP 5.4
-  ([#422](https://github.com/MyIntervals/emogrifier/pull/422))
-- Drop support for HHVM
-  ([#386](https://github.com/MyIntervals/emogrifier/pull/386))
-
-
-### Fixed
-- emogrifyBody must not encode umlaut entities
-  ([#414](https://github.com/MyIntervals/emogrifier/pull/414))
-- Fix mapped HTML attribute values
-  ([#405](https://github.com/MyIntervals/emogrifier/pull/405))
-- Make sure the HTML always has a BODY element
-  ([#410](https://github.com/MyIntervals/emogrifier/pull/410))
-- Make inline style priority higher than css block priority
-  ([#404](https://github.com/MyIntervals/emogrifier/pull/404))
-- Fix media regex parsing
-  ([#402](https://github.com/MyIntervals/emogrifier/pull/402))
-- Silence purposefully ignored PHP Warnings
-  ([#400](https://github.com/MyIntervals/emogrifier/pull/400))
-
-
-### Security
-
-
-
 ## 1.2.0 (2017-03-02)
 
 ### Added
